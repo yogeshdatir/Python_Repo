@@ -50,5 +50,33 @@ Django - Anaconda Installation
     </code>
     
     iv) Then run the server: python manage.py runserver [port_number]
+    URL: http://127.0.0.1:8080/index/
     
     
+URL Mapping
+
+1. Create urls.py file in your app directory:
+    <code>
+        from django.urls import path
+        from polls import views
+
+        urlpatterns = [
+            path('', views.index, name='index'),
+        ]
+    </code>
+    
+2.  Changes in urls.py file project directory
+    ..\first_django_project\first_django_project\urls.py
+    <code>
+        from django.contrib import admin
+        from django.urls import path
+        from django.conf.urls import include
+
+        urlpatterns = [
+            path('admin/', admin.site.urls),
+            path('polls/', include('polls.urls')),
+        ]
+    </code>
+    
+3. Run the server: python manage.py runserver [port_number]
+    URL: http://127.0.0.1:8080/polls/ 
