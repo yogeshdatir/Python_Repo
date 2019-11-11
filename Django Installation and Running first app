@@ -1,0 +1,54 @@
+Django - Anaconda Installation
+
+1. Install Anaconda
+2. In Anaconda prompt run:
+    conda install django
+3. Change direcory if needed and run:
+    django-admin startproject project_name
+4. Change directory to the project directory and run:
+    python manage.py runserver [port_number]
+5. To create app, run:
+    python manage.py startapp polls
+6. To start with your app:
+    i)
+    ..\first_django_project\polls\views.py
+    <code>
+      from django.shortcuts import render
+      from django.http import HttpResponse
+
+      def index(request):
+        return HttpResponse("Hello World!")
+
+      # Create your views here.
+    </code>
+    
+    ii)
+    ..\first_django_project\first_django_project\settings.py
+    <code>
+      INSTALLED_APPS = [
+        'django.contrib.admin',
+        'django.contrib.auth',
+        'django.contrib.contenttypes',
+        'django.contrib.sessions',
+        'django.contrib.messages',
+        'django.contrib.staticfiles',
+        'polls'
+      ]
+    </code>
+    
+    iii)
+    ..\first_django_project\first_django_project\urls.py
+    <code>
+      from django.contrib import admin
+      from django.urls import path
+      from polls import views
+
+      urlpatterns = [
+          path('admin/', admin.site.urls),
+          path('index/', views.index[, name='index'])
+      ]
+    </code>
+    
+    iv) Then run the server: python manage.py runserver [port_number]
+    
+    
