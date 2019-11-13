@@ -1,0 +1,39 @@
+1. Add folder named static in your project directory with static file/folder-files e.g. images, css, javascript files.
+
+2. In settings.py, add STATIC_DIR variable.
+  
+  ..\first_django_project\first_django_project\settings.py
+  <code>
+    # Build paths inside the project like this: os.path.join(BASE_DIR, ...)
+    BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
+    TEMPLATE_DIR = os.path.join(BASE_DIR, 'templates')
+    STATIC_DIR = os.path.join(BASE_DIR, 'static')
+  </code>
+  
+  Also, add STATICFILES_DIR list with list of static file directories.
+  
+  <code>
+    STATICFILES_DIRS = [
+      STATIC_DIR,
+    ]
+  </code>
+  
+3. In your template index.html of your application:
+
+  <code>
+    <!DOCTYPE html>
+    {% load staticfiles %}                            
+    <html lang="en">
+    <head>
+        <meta charset="UTF-8">
+        <title>First App</title>
+        [<link rel="stylesheet" href="{% static 'css/style.css' %}">]
+    </head>
+    <body>
+        <h1> Hello, this is index.html.</h1>
+        {{ insert_me }}
+
+        <img src="{% static 'images/p2.jpg' %}" alt="image">
+    </body>
+    </html>
+  </code>
