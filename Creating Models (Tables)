@@ -1,0 +1,45 @@
+1. In application directory, edit models.py.
+
+  <code>
+    from django.db import models
+
+    # Create your models here.
+
+
+    class Topic(models.Model):                                      # Creates Topics table
+        topic_name = models.CharField(max_length=264, unique=True)  # Creates topic_name column
+
+        def __str__(self):                                          # Returns string object
+            return self.topic_name
+            
+     
+  </code>
+  
+2. Run following commands in given sequence:
+  
+  i. python manage.py migrate
+  ii. python manage.py makemigrations
+  iii. python manage.py migrate
+  
+  
+3. To check if the changes are reflected: (can skip this step)
+    
+   Run following commands:
+   
+   i. python manage.py shell
+   ii. from polls.models import Topic
+   iii. print(Topic.objects.all())                # <QuerySet []>
+   iv. t = Topic(topic_name="Searching")
+   v. t.save()
+   vi. print(Topic.objects.all())                 # <QuerySet [<Topic: Searching>]>
+   
+   
+4. To create the super user for database for first time:
+
+    i. python manage.py createsuperuser
+    Username (leave blank to use 'yogeshdatir'): yogesh
+    Email address: yogdat@gmail.com
+    Password:
+    Password (again):
+    
+5. Go to http://127.0.0.1:8080/admin to manage further operations as needed.
