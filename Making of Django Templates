@@ -77,6 +77,32 @@ Templates in Django
   # Create your views here.
   </code>
   
-  7. Refer: Template tags - https://docs.djangoproject.com/en/2.2/ref/templates/builtins/
+  7. Add the path for template in the urls.py file of application.
+  
+    ..\first_django_project\polls\urls.py
+    <code>
+      from django.urls import path
+      from polls import views
+
+      urlpatterns = [
+          path('', views.index, name='index'),              # url for browser - http://127.0.0.1:8080/polls
+          path('display', views.display, name='display'),   # url for browser - http://127.0.0.1:8080/polls/display
+      ]
+    </code>
+    
+    For this to work, make sure that urls.py file of the project has following changes.
+    
+    <code>
+      from django.contrib import admin
+      from django.urls import include,path
+
+      urlpatterns = [
+          path('admin/', admin.site.urls),
+          path('polls/', include('polls.urls')),
+      ]
+
+    </code>
+  
+  8. Refer: Template tags - https://docs.djangoproject.com/en/2.2/ref/templates/builtins/
             render() function
   
