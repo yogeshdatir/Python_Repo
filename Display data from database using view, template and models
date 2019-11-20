@@ -1,0 +1,79 @@
+1. Create a template to display data from view.
+
+    ..\first_django_project\templates\polls\display.html
+    <code>
+    <!DOCTYPE html>
+    <html lang="en">
+    <head>
+        <meta charset="UTF-8">
+        <title>Data</title>
+    </head>
+    <body>
+
+        <div>
+            {% if access_records %}
+            <table>
+                <thead>
+                    <th>Name</th>
+                    <th>Date</th>
+                </thead>
+                {% for record in access_records %}
+                <tr>
+                    <td> {{ record.name }} </td>
+                    <td> {{ record.date }} </td>
+                </tr>
+                {% endfor %}
+            </table>
+            {% else %}
+                <div>
+                    <p>No Records Found...</p>
+                </div>
+            {% endif %}
+        </div>
+
+    </body>
+    </html>
+    </code>
+    
+2. Create a view to get data from models.
+
+    ..\first_django_project\polls\views.py
+    <code>
+    
+    
+    from django.shortcuts import render
+    from polls.models import Topic, Web_page, AccessRecord
+
+    def index(request):
+        my_dict = { "insert_me": "Hello, this is from view.py!"}
+        return render(request, 'polls/index.html', context=my_dict)
+
+    # Create your views here.
+
+    def display(request):
+        my_webpages = AccessRecord.objects.order_by('date')
+        date_dict = {'access_records': my_webpages}
+        return render(request, 'polls/display.html', context=date_dict)
+        
+    </code>
+    
+3. Register the new template in the urls.py file
+
+    ..\first_django_project\polls\urls.py
+    <code>
+    
+    
+    from django.urls import path
+    from polls import views
+
+    urlpatterns = [
+        path('', views.index, name='index'),
+        path('display', views.display, name='display'),
+    ]
+    
+    
+    </code>
+    
+4. Run the server - python manage.py runserver 8080
+   Browser URL for the file - http://127.0.0.1:8080/polls/display
+    
