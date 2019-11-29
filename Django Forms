@@ -1,0 +1,68 @@
+1. Create forms.py file in your application.
+
+  ..\first_django_project\polls\forms.py
+  <code>
+    from django import forms
+
+
+    class FormName(forms.Form):
+        name = forms.CharField()
+        email = forms.EmailField()
+        text = forms.CharField(widget=forms.Textarea)
+        
+  
+  </code>
+  
+2. Add a method(view) in views.py in your application.
+
+  ..\first_django_project\polls\views.py
+  
+  <code>
+  from django.shortcuts import render
+  from . import forms
+
+  def index(request):
+      my_dict = { "insert_me": "Hello, this is from view.py!"}
+      return render(request, 'polls/index.html', context=my_dict)
+
+  # Create your views here.
+
+  def userForm(request):
+      form = forms.FormName()
+      return render(request, 'polls/formsTutorial.html', {'form':form})
+  
+  </code>
+  
+  
+3. Create a template file in template folder of your project.
+  
+  ..\first_django_project\templates\polls\formsTutorial.html
+    
+  <code>
+  <!DOCTYPE html>
+  <html lang="en">
+  <head>
+      <meta charset="UTF-8">
+      <title>Forms Tutorial</title>
+  </head>
+  <body>
+  {{form}}
+
+  </body>
+  </html>  
+  </code>
+  
+  
+4. Add the URL entry in urls.py of your application.
+
+  ..\first_django_project\polls\urls.py
+  
+  <code>  
+    from django.urls import path
+    from polls import views
+
+    urlpatterns = [
+        path('', views.index, name='index'),
+        path('userform', views.userForm, name='form'),
+    ]
+  </code>
