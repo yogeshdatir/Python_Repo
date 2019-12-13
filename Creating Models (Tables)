@@ -49,8 +49,8 @@
   
 3. Run following commands in given sequence:
   
-  i. python manage.py makemigrations
-  ii. python manage.py migrate
+  i. python manage.py migrate
+  ii. python manage.py makemigrations
   
   
 4. To check if the changes are reflected: (can skip this step)
