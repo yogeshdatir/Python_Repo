@@ -1,5 +1,8 @@
 Templates in Django
 
+This tutorial shows how to create templates for entire project at a commmon folder for all the apps.
+To know about more options refer - https://wsvincent.com/django-tips-template-structure/
+
 1. Create templates directory in your project dictionary which will be used to store the templates used in the project.
 
 2. Add TEMPLATE_DIR variable in settings.py of your project directory.
@@ -103,6 +106,8 @@ Templates in Django
 
     </code>
   
-  8. Refer: Template tags - https://docs.djangoproject.com/en/2.2/ref/templates/builtins/
-            render() function
+  8. Refer: i. Template tags - https://docs.djangoproject.com/en/2.2/ref/templates/builtins/
+            ii. render() function
+            iii. https://wsvincent.com/django-tips-template-structure/
+            iv. https://docs.djangoproject.com/en/dev/intro/tutorial03/
   
