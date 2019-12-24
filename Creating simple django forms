@@ -1,0 +1,53 @@
+1. Create a forms.py file in your app folder.
+
+2. Edit forms.py:
+
+  <code>
+  
+  from django import forms
+
+
+  class Test_Form(forms.Form):
+      name = forms.CharField()
+      email = forms.EmailField()
+      text = forms.CharField(widget=forms.Textarea)
+      
+  
+  </code>
+  
+  
+3. Import the form/s in views.py.
+
+  <code>
+  
+    from . import forms
+    
+    def index(request):
+      
+      # create a form instance
+      form = forms.Test_Form()
+      name = ""
+      if request.method == "POST":
+        form = forms.Test_Form(request.POST)
+        if form.is_valid():
+          name = form.cleaned_data['name']
+      
+      return render(request, 'polls/index.html', context={"form": form, "name": name})
+      
+  </code>
+  
+  
+4. Edit template index.html.
+
+   <code>
+   
+   {{ name }}
+    <div class="container">
+        <form method="post">
+            {% csrf_token %}
+            {{ form.as_p }}
+            <input type="submit" value="Submit">
+        </form>
+    </div>
+    
+    </code>
