@@ -184,7 +184,7 @@
 	import React, { Component, Fragment } from 'react'
 	import ReactDOM from 'react-dom'
 
-	import Watchlists from './watchlists/Watchlists'
+	import Watchlists from './watchlists/Watchlists'						// changes
 
 	import { Provider } from 'react-redux'
 	import store from '../store'
@@ -194,7 +194,7 @@
 			return (
 				<Provider store={store}>
 					<Fragment>
-						<Watchlists></Watchlists>
+						<Watchlists></Watchlists>							// changes
 					</Fragment>
 				</Provider>
 			)
@@ -202,3 +202,126 @@
 	}
 
 	ReactDOM.render(<App />, document.getElementById('app'))
+	
+11. To add delete feature.
+
+	.\django_fin_app\portfolio_management\src\actions\types.js
+
+	export const GET_WATCHLISTS = "GET_WATCHLISTS"
+
+	export const DELETE_WATCHLIST = "DELETE_WATCHLIST"						// changes
+	
+	===========================================================================================
+	.\django_fin_app\portfolio_management\src\actions\watchlists.js
+	
+	import axios from 'axios'
+
+	import { GET_WATCHLISTS,DELETE_WATCHLIST } from './types.js'			// changes
+
+	export const getWatchlists = () => dispatch => {
+		axios.get('./api/watchlists/')
+			.then(res => {
+				dispatch({
+					type: GET_WATCHLISTS,
+					payload: res.data
+				})
+			})
+			.catch(err => console.log(err))
+	}
+
+	// changes
+	export const deleteWatchlist = id => dispatch => {		
+		axios.delete(`./api/watchlists/${id}/`)
+			.then(res => {
+				dispatch({
+					type: DELETE_WATCHLIST,
+					payload: id
+				})
+			})
+			.catch(err => console.log(err))
+	}
+	
+	===========================================================================================
+	.\django_fin_app\portfolio_management\src\reducers\watchlists.js
+	
+	// Reducer is nothing but a function which evaluates an action and send down certain state depending on what that action does.
+
+	import { GET_WATCHLISTS,DELETE_WATCHLIST } from '../actions/types.js'		// changes
+
+	const initialState = {
+		watchlists: []
+	}
+
+	export default function(state = initialState, action) {
+		switch(action.type) {
+			case GET_WATCHLISTS:
+				return {
+					...state,
+					watchlists: action.payload
+				}
+			// changes
+			case DELETE_WATCHLIST: 
+				return {
+					...state,
+					watchlists: state.watchlists.filter(watchlist => watchlist.id !== action.payload)
+				}
+			default:
+				return state
+		}
+	}
+	
+	===========================================================================================
+	.\django_fin_app\portfolio_management\src\components\watchlists\Watchlists.js
+	
+	import React, {Component, Fragment} from 'react'
+	import {connect} from 'react-redux'
+	import PropTypes from 'prop-types'
+	import { getWatchlists,deleteWatchlist } from '../../actions/watchlists'		// changes
+
+	export class Watchlists extends Component {
+		static propTypes = {
+			watchlists: PropTypes.array.isRequired
+		}
+
+		componentDidMount() {
+			this.props.getWatchlists()
+		}
+
+		render() {
+			return (
+				<Fragment>
+					<h1>Watchlists</h1>
+					<table className="table table-striped">
+						<thead>
+							<tr>
+								<th>Name</th>
+								<th>Start Date</th>
+								<th>End Date</th>
+								<th>Amount</th>
+								<th></th>
+							</tr>
+						</thead>
+						<tbody>
+							{ this.props.watchlists.map( watchlist => (
+								<tr key={watchlist.id}>
+									<td>{watchlist.watchlist_name}</td>
+									<td>{watchlist.start_date}</td>
+									<td>{watchlist.end_date}</td>
+									<td>{watchlist.investment_amount}</td>
+									<td><button onClick={this.props.deleteWatchlist.bind(this, watchlist.id)} 
+									className="btn btn-danger btn-sm">Delete</button></td>							// changes
+								</tr>
+							))}
+						</tbody>
+					</table>
+				</Fragment>
+			)
+		}
+	}
+
+	const mapStateToProps = state => ({
+		// any_name: state.(reducer_name_from_root_reducer).(part_of_state)
+		watchlists: state.watchlists.watchlists
+	})
+
+	export default connect(mapStateToProps, { getWatchlists, deleteWatchlist })(Watchlists)					// changes
