@@ -1,0 +1,204 @@
+1. Run npm packages installations in root project folder:
+
+	npm i redux react-redux redux-thunk redux-devtools-extension
+	
+	npm run dev
+	
+2. Create a store.
+
+	.\django_fin_app\portfolio_management\src\store.js
+
+	import {createStore, applyMiddleware} from 'redux'
+	import { composeWithDevTools } from 'redux-devtools-extension'
+	import thunk from 'redux-thunk'
+	import rootReducer from './reducers'
+
+	const initialState = {}
+
+	const middleware = [thunk]
+
+	const store = createStore(
+		rootReducer,
+		initialState,
+		composeWithDevTools(applyMiddleware(...middleware))
+	)
+
+	export default store
+	
+3. Create an index.js in reducers folder (create reducers folder).
+
+	.\django_fin_app\portfolio_management\src\reducers\index.js
+	
+	import { combineReducers } from 'redux'
+	export default combineReducers({})
+
+4. In main component App, make following changes.
+
+	.\django_fin_app\portfolio_management\src\components\App.js
+
+	import React, { Component, Fragment } from 'react'
+	import ReactDOM from 'react-dom'
+
+	import { Provider } from 'react-redux'						// changes
+	import store from '../store'								// changes
+
+	class App extends Component {
+		render() {
+			return (
+				<Provider store={store}>						// changes
+					<Fragment>									// changes
+						<h1>This is react.</h1>
+					</Fragment>									// changes
+				</Provider>										// changes
+			)
+		}
+	}
+
+	ReactDOM.render(<App />, document.getElementById('app'))
+	
+5. In reducers\index make following changes.
+
+	.\django_fin_app\portfolio_management\src\reducers\index.js
+	
+	import { combineReducers } from 'redux'
+	import watchlists from './watchlists'						// changes
+
+	export default combineReducers({
+		watchlists												// changes
+	})
+	
+6. Create a reducers/watchlists.js reducer file.
+
+	.\django_fin_app\portfolio_management\src\reducers\watchlists.js
+	
+	// Reducer is nothing but a function which evaluates an action and send down certain state 
+	// depending on what that action does.
+
+	import { GET_WATCHLISTS } from '../actions/types.js'
+
+	const initialState = {
+		watchlists: []
+	}
+
+	export default function(state = initialState, action) {
+		switch(action.type) {
+			case GET_WATCHLISTS:
+				return {
+					...state,
+					watchlists: action.payload
+				}
+			default:
+				return state
+		}
+	}
+	
+7. Create actions/types.js file.
+
+	.\django_fin_app\portfolio_management\src\actions\types.js
+
+	export const GET_WATCHLISTS = "GET_WATCHLISTS"
+	
+8. Install axios in root project directory.
+
+	npm i axios
+
+9. Create actions/watchlists.js file for actions.
+
+	.\django_fin_app\portfolio_management\src\actions\watchlists.js
+	
+	import axios from 'axios'
+
+	import GET_WATCHLISTS from './types.js'
+
+	export const getWatchlists = () => dispatch => {
+		axios.get('./api/watchlists/')
+			.then(res => {
+				dispatch({
+					type: GET_WATCHLISTS,
+					payload: res.data
+				})
+			})
+			.catch(err => console.log(err))
+	}
+
+10. Create watchlists/Watchlist.js component and import it to the App.js.
+
+	.\django_fin_app\portfolio_management\src\components\watchlists\Watchlists.js
+
+	import React, {Component, Fragment} from 'react'
+	import {connect} from 'react-redux'
+	import PropTypes from 'prop-types'
+	import { getWatchlists } from '../../actions/watchlists'
+
+	export class Watchlists extends Component {
+		static propTypes = {
+			watchlists: PropTypes.array.isRequired
+		}
+
+		componentDidMount() {
+			this.props.getWatchlists()
+		}
+
+		render() {
+			return (
+				<Fragment>
+					<h1>Watchlists</h1>
+					<table className="table table-striped">
+						<thead>
+							<tr>
+								<th>Name</th>
+								<th>Start Date</th>
+								<th>End Date</th>
+								<th>Amount</th>
+								<th></th>
+							</tr>
+						</thead>
+						<tbody>
+							{ this.props.watchlists.map( watchlist => (
+								<tr key={watchlist.id}>
+									<td>{watchlist.watchlist_name}</td>
+									<td>{watchlist.start_date}</td>
+									<td>{watchlist.end_date}</td>
+									<td>{watchlist.investment_amount}</td>
+									<td><button className="btn btn-danger btn-sm">Delete</button></td>
+								</tr>
+							))}
+						</tbody>
+					</table>
+				</Fragment>
+			)
+		}
+	}
+
+	const mapStateToProps = state => ({
+		// any_name: state.(reducer_name_from_root_reducer).(part_of_state)
+		watchlists: state.watchlists.watchlists
+	})
+
+	export default connect(mapStateToProps, { getWatchlists })(Watchlists)
+	
+	=======================================================================================
+	
+	.\django_fin_app\portfolio_management\src\components\App.js
+	
+	import React, { Component, Fragment } from 'react'
+	import ReactDOM from 'react-dom'
+
+	import Watchlists from './watchlists/Watchlists'
+
+	import { Provider } from 'react-redux'
+	import store from '../store'
+
+	class App extends Component {
+		render() {
+			return (
+				<Provider store={store}>
+					<Fragment>
+						<Watchlists></Watchlists>
+					</Fragment>
+				</Provider>
+			)
+		}
+	}
+
+	ReactDOM.render(<App />, document.getElementById('app'))
