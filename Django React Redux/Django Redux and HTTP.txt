@@ -203,7 +203,7 @@
 
 	ReactDOM.render(<App />, document.getElementById('app'))
 	
-11. To add delete feature.
+11. To add delete watchlist feature.
 
 	.\django_fin_app\portfolio_management\src\actions\types.js
 
@@ -325,3 +325,229 @@
 	})
 
 	export default connect(mapStateToProps, { getWatchlists, deleteWatchlist })(Watchlists)					// changes
+	
+12. Add watchlist feature.
+	Create WatchlistForm component.
+	
+	.\django_fin_app\portfolio_management\src\components\watchlists\WatchlistForm.js
+	
+	import React, { Component, Fragment } from 'react'
+	import { Watchlists } from './Watchlists'
+
+	export class WatchlistForm extends Component {
+	  state = {
+		watchlist_name: "",
+		start_date: "", 
+		end_date: "",
+		investment_amount: 0
+	  }
+
+	  onChange = e => {
+		this.setState({
+		  [e.target.name]: e.target.value
+		})
+	  }
+
+	  onSubmit = e => {
+		e.preventDefault()
+		console.log("submit")
+	  }
+
+	  render() {
+		const { watchlist_name, start_date, end_date, investment_amount } = this.state
+
+		return (
+		  <Fragment>
+			<h1>Add Watchlist</h1>
+			<form className="card card-body" onSubmit={this.onSubmit}>
+			  <div className="form-row">
+				<div className="form-group col-md-3">
+				  <label htmlFor="watchlist-name">Watchlist Name</label>
+				  <input type="text" className="form-control" name="watchlist_name" id="watchlist-name" placeholder="Name" value={watchlist_name} onChange={this.onChange} />
+				</div>
+				<div className="form-group col-md-3">
+				  <label htmlFor="watchlist-start-date">Start Date</label>
+				  <input type="date" className="form-control" name="start_date" id="watchlist-start-date" placeholder="Start Date" value={start_date} onChange={this.onChange} />
+				</div>
+				<div className="form-group col-md-3">
+				  <label htmlFor="watchlist-end-date">End Date</label>
+				  <input type="date" className="form-control" name="end_date" id="watchlist-end-date" placeholder="End Date" value={end_date} onChange={this.onChange} />
+				</div>
+				<div className="form-group col-md-3">
+				  <label htmlFor="watchlist-amount">Investment Amount</label>
+				  <input type="number" className="form-control" name="investment_amount" id="watchlist-amount" placeholder="Investment Amount" value={investment_amount} onChange={this.onChange} />
+				</div>
+				<div className="form-group mx-auto mt-3">
+				  <button type="submit" className="btn btn-primary btn-lg">
+					Submit
+				  </button>
+				</div>
+			  </div>
+			</form>
+		  </Fragment>
+		)
+	  }
+	}
+
+	export default WatchlistForm
+	
+	
+13. Now add action to add new watchlist using post method.\
+
+	.\django_fin_app\portfolio_management\src\actions\types.js
+
+	export const GET_WATCHLISTS = "GET_WATCHLISTS"
+
+	export const DELETE_WATCHLIST = "DELETE_WATCHLIST"
+
+	export const ADD_WATCHLIST = "ADD_WATCHLIST"											// Changes
+	
+	===========================================================================================================
+	
+	.\django_fin_app\portfolio_management\src\actions\watchlists.js
+	
+	import axios from 'axios'
+
+	import { GET_WATCHLISTS,DELETE_WATCHLIST,ADD_WATCHLIST } from './types.js'				// Changes
+
+	export const getWatchlists = () => dispatch => {
+		axios.get('./api/watchlists/')
+			.then(res => {
+				dispatch({
+					type: GET_WATCHLISTS,
+					payload: res.data
+				})
+			})
+			.catch(err => console.log(err))
+	}
+
+	export const deleteWatchlist = id => dispatch => {
+		axios.delete(`./api/watchlists/${id}/`)
+			.then(res => {
+				dispatch({
+					type: DELETE_WATCHLIST,
+					payload: id
+				})
+			})
+			.catch(err => console.log(err))
+	}
+
+	// Changes
+	export const addWatchlist = (watchlist) => dispatch => {
+		axios.post('./api/watchlists/', watchlist)
+			.then(res => {
+				dispatch({
+					type: ADD_WATCHLIST,
+					payload: res.data
+				})
+			})
+			.catch(err => console.log(err))
+	}
+	
+	===========================================================================================================
+	
+	.\django_fin_app\portfolio_management\src\reducers\watchlists.js
+	
+	// Reducer is nothing but a function which evaluates an action and send down certain state depending on what that action does.
+
+	import { GET_WATCHLISTS,DELETE_WATCHLIST,ADD_WATCHLIST } from '../actions/types.js'
+
+	const initialState = {
+		watchlists: []
+	}
+
+	export default function(state = initialState, action) {
+		switch(action.type) {
+			case GET_WATCHLISTS:
+				return {
+					...state,
+					watchlists: action.payload
+				}
+			case DELETE_WATCHLIST: 
+				return {
+					...state,
+					watchlists: state.watchlists.filter(watchlist => watchlist.id !== action.payload)
+				}
+			case ADD_WATCHLIST:
+				return {
+					...state,
+					watchlists: [...state.watchlists, action.payload]
+				}
+			default:
+				return state
+		}
+	}
+		
+	===========================================================================================================
+	
+	.\django_fin_app\portfolio_management\src\components\watchlists\WatchlistForm.js
+	
+	import React, { Component, Fragment } from 'react'
+	import { connect } from 'react-redux'															// Changes
+	import PropTypes from 'prop-types'																// Changes
+	import { addWatchlist } from '../../actions/watchlists'											// Changes
+
+	export class WatchlistForm extends Component {
+	  state = {
+		watchlist_name: "",
+		start_date: "", 
+		end_date: "",
+		investment_amount: 0
+	  }
+
+		// Changes
+	  static propTypes = {
+		addWatchlist: PropTypes.func.isRequired
+	  }
+
+	  onChange = e => {
+		this.setState({
+		  [e.target.name]: e.target.value
+		})
+	  }
+
+		// Changes
+	  onSubmit = e => {
+		e.preventDefault()
+		const { watchlist_name, start_date, end_date, investment_amount } = this.state
+		const watchlist = {watchlist_name, start_date, end_date, investment_amount}
+		this.props.addWatchlist(watchlist)
+	  }
+
+	  render() {
+		const { watchlist_name, start_date, end_date, investment_amount } = this.state
+
+		return (
+		  <Fragment>
+			<h1>Add Watchlist</h1>
+			<form className="card card-body" onSubmit={this.onSubmit}>
+			  <div className="form-row">
+				<div className="form-group col-md-3">
+				  <label htmlFor="watchlist-name">Watchlist Name</label>
+				  <input type="text" className="form-control" name="watchlist_name" id="watchlist-name" placeholder="Name" value={watchlist_name} onChange={this.onChange} />
+				</div>
+				<div className="form-group col-md-3">
+				  <label htmlFor="watchlist-start-date">Start Date</label>
+				  <input type="date" className="form-control" name="start_date" id="watchlist-start-date" placeholder="Start Date" value={start_date} onChange={this.onChange} />
+				</div>
+				<div className="form-group col-md-3">
+				  <label htmlFor="watchlist-end-date">End Date</label>
+				  <input type="date" className="form-control" name="end_date" id="watchlist-end-date" placeholder="End Date" value={end_date} onChange={this.onChange} />
+				</div>
+				<div className="form-group col-md-3">
+				  <label htmlFor="watchlist-amount">Investment Amount</label>
+				  <input type="number" className="form-control" name="investment_amount" id="watchlist-amount" placeholder="Investment Amount" value={investment_amount} onChange={this.onChange} />
+				</div>
+				<div className="form-group mx-auto mt-3">
+				  <button type="submit" className="btn btn-primary btn-lg">
+					Submit
+				  </button>
+				</div>
+			  </div>
+			</form>
+		  </Fragment>
+		)
+	  }
+	}
+
+	export default connect(null, { addWatchlist })(WatchlistForm)											// Changes
