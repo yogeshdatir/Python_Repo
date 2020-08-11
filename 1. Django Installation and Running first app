@@ -3,6 +3,10 @@ Django - Anaconda Installation
 1. Install Anaconda
 2. In Anaconda prompt run:
     conda install django
+    OR
+    conda install -c conda-forge django=3.0.3
+    
+    conda install -c conda-forge <somepackage>
 3. Change direcory if needed and run:
     django-admin startproject project_name
 4. Change directory to the project directory and run:
